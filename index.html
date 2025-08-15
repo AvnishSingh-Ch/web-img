@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Image Repo Browser</title>
+<style>
+  body { font-family: sans-serif; padding: 20px; }
+  a { display: block; margin: 5px 0; text-decoration: none; color: #0366d6; }
+  a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+<h2>📂 File Browser</h2>
+<div id="file-list">Loading...</div>
+
+<script>
+(async function() {
+  const repoUser = "AvnishSingh-Ch"; // your GitHub username
+  const repoName = "blog-images"; // your repo name
+  const branch = "main"; // branch to browse
+
+  // Get current path from URL (for subfolders)
+  const path = window.location.pathname
+    .replace(`/blog-images/`, "")
+    .replace(/^\//, "");
+
+  // Fetch folder contents from GitHub API
+  const res = await fetch(`https://api.github.com/repos/${repoUser}/${repoName}/contents/${path}?ref=${branch}`);
+  if (!res.ok) {
+    document.getElementById("file-list").innerHTML = "Error loading files.";
+    return;
+  }
+
+  const files = await res.json();
+  const list = document.getElementById("file-list");
+  list.innerHTML = "";
+
+  // Add parent folder link if not root
+  if (path) {
+    const parent = path.split("/").slice(0, -1).join("/");
+    const link = document.createElement("a");
+    link.href = parent ? `/${repoName}/${parent}` : `/${repoName}/`;
+    link.textContent = "⬅️ Go up";
+    list.appendChild(link);
+  }
+
+  // Show folders first
+  files
+    .filter(f => f.type === "dir")
+    .forEach(f => {
+      const link = document.createElement("a");
+      link.href = `/${repoName}/${f.path}`;
+      link.textContent = `📁 ${f.name}`;
+      list.appendChild(link);
+    });
+
+  // Show image/files
+  files
+    .filter(f => f.type === "file")
+    .forEach(f => {
+      const link = document.createElement("a");
+      link.href = f.download_url;
+      link.textContent = `🖼️ ${f.name}`;
+      list.appendChild(link);
+    });
+})();
+</script>
+</body>
+</html>
+
