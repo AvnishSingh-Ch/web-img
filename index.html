@@ -16,12 +16,12 @@
 <script>
 (async function() {
   const repoUser = "AvnishSingh-Ch"; // your GitHub username
-  const repoName = "blog-images"; // your repo name
+  const repoName = "web-img"; // your repo name
   const branch = "main"; // branch to browse
 
   // Get current path from URL (for subfolders)
-  const path = window.location.pathname
-    .replace(`/blog-images/`, "")
+  const path = decodeURIComponent(window.location.pathname)
+    .replace(`/web-img/`, "")
     .replace(/^\//, "");
 
   // Fetch folder contents from GitHub API
